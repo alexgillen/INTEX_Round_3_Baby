@@ -146,8 +146,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", builder =>
     {
         builder.WithOrigins(
-                "http://happy-beach-07834ec1e.6.azurestaticapps.net/",  // HTTP Frontend URL
-                "https://happy-beach-07834ec1e.6.azurestaticapps.net/"   // HTTPS Frontend URL
+                "http://happy-beach-07834ec1e.6.azurestaticapps.net",  // HTTP Frontend URL
+                "https://happy-beach-07834ec1e.6.azurestaticapps.net"   // HTTPS Frontend URL
             )
             .AllowAnyMethod()
             .AllowAnyHeader()
