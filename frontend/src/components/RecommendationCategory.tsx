@@ -4,6 +4,23 @@ import styled from 'styled-components';
 import { MovieRecommendation } from '../api/RecommendationAPI';
 import MovieDetailsModal from './MovieDetailsModal';
 
+// Array of default poster options
+const DEFAULT_POSTER_OPTIONS = [
+  'https://image.tmdb.org/t/p/original/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg', // The Matrix
+  'https://image.tmdb.org/t/p/original/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg', // Star Wars
+  'https://image.tmdb.org/t/p/original/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg', // Titanic
+  'https://image.tmdb.org/t/p/original/5KCVkau1HEl7ZzfPsKAPM0sMiKc.jpg', // Inception
+  'https://image.tmdb.org/t/p/original/rPpxrz8o0svAPCLucjsEdMXoDfX.jpg', // Forrest Gump
+  'https://image.tmdb.org/t/p/original/vL5LR6WdxWPjLPFRLe133jXWsh5.jpg', // The Dark Knight
+  'https://image.tmdb.org/t/p/original/3bhkrj58Vtu7enYsRolD1fZdja1.jpg'  // The Godfather
+];
+
+// Function to get a random poster URL
+const getRandomPosterUrl = () => {
+  const randomIndex = Math.floor(Math.random() * DEFAULT_POSTER_OPTIONS.length);
+  return DEFAULT_POSTER_OPTIONS[randomIndex];
+};
+
 interface RecommendationCategoryProps {
   title: string;
   recommendations: MovieRecommendation[];
@@ -63,11 +80,14 @@ const RecommendationCategory: React.FC<RecommendationCategoryProps> = ({
                   alt={movie.title} 
                   onError={(e) => {
                     e.currentTarget.onerror = null; // Prevent infinite loops
-                    e.currentTarget.src = '/placeholder-poster.jpg'; // Use a placeholder image
+                    e.currentTarget.src = getRandomPosterUrl(); 
                   }}
                 />
               ) : (
-                <MoviePosterTitle>{movie.title}</MoviePosterTitle>
+                <PosterImage 
+                  src={getRandomPosterUrl()}
+                  alt={movie.title} 
+                />
               )}
             </MoviePoster>
             <MovieInfo>
@@ -203,8 +223,8 @@ const RecTypeTag = styled.span<RecTypeTagProps>`
   padding: 3px 8px;
   border-radius: 12px;
   font-size: 0.7rem;
-  background-color: ${props => props.$isCollaborative ? 'rgba(229, 9, 20, 0.2)' : 'rgba(33, 150, 83, 0.2)'};
-  color: ${props => props.$isCollaborative ? '#f88' : '#8f8'};
+  background-color: ${props => props.$isCollaborative ? 'rgba(59, 130, 246, 0.2)' : 'rgba(33, 150, 83, 0.2)'};
+  color: ${props => props.$isCollaborative ? '#90caf9' : '#8f8'};
 `;
 
 const SkeletonCard = styled.div`

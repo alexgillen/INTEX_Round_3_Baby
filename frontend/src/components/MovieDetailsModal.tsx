@@ -6,6 +6,23 @@ import { Movie } from '../types/Movie';
 import { getSimilarMovies } from '../api/MovieAPI';
 import StarRating from './StarRating';
 
+// Array of default poster options
+const DEFAULT_POSTER_OPTIONS = [
+  'https://image.tmdb.org/t/p/original/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg', // The Matrix
+  'https://image.tmdb.org/t/p/original/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg', // Star Wars
+  'https://image.tmdb.org/t/p/original/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg', // Titanic
+  'https://image.tmdb.org/t/p/original/5KCVkau1HEl7ZzfPsKAPM0sMiKc.jpg', // Inception
+  'https://image.tmdb.org/t/p/original/rPpxrz8o0svAPCLucjsEdMXoDfX.jpg', // Forrest Gump
+  'https://image.tmdb.org/t/p/original/vL5LR6WdxWPjLPFRLe133jXWsh5.jpg', // The Dark Knight
+  'https://image.tmdb.org/t/p/original/3bhkrj58Vtu7enYsRolD1fZdja1.jpg'  // The Godfather
+];
+
+// Function to get a random poster URL
+const getRandomPosterUrl = () => {
+  const randomIndex = Math.floor(Math.random() * DEFAULT_POSTER_OPTIONS.length);
+  return DEFAULT_POSTER_OPTIONS[randomIndex];
+};
+
 interface MovieDetailsModalProps {
   movie: MovieRecommendation | null;
   onClose: () => void;
@@ -118,13 +135,14 @@ const MovieDetailsModal: React.FC<MovieDetailsModalProps> = ({ movie, onClose, o
                   alt={`${movie.title} poster`}
                   onError={(e) => {
                     e.currentTarget.onerror = null; // Prevent infinite error loops
-                    e.currentTarget.src = '/placeholder-poster.jpg'; // Use a placeholder image
+                    e.currentTarget.src = getRandomPosterUrl(); 
                   }} 
                 />
               ) : (
-                <MoviePosterPlaceholder>
-                  <MoviePosterTitle>{movie.title}</MoviePosterTitle>
-                </MoviePosterPlaceholder>
+                <MoviePoster 
+                  src={getRandomPosterUrl()} 
+                  alt={`${movie.title} poster`}
+                />
               )}
               
               <RecommendationBadge 
@@ -204,11 +222,14 @@ const MovieDetailsModal: React.FC<MovieDetailsModalProps> = ({ movie, onClose, o
                           alt={similarMovie.title || 'Movie'} 
                           onError={(e) => {
                             e.currentTarget.onerror = null; // Prevent infinite loops
-                            e.currentTarget.src = '/placeholder-poster.jpg'; // Use a placeholder image
+                            e.currentTarget.src = getRandomPosterUrl(); 
                           }}
                         />
                       ) : (
-                        <MoviePosterTitle>{similarMovie.title || 'Untitled'}</MoviePosterTitle>
+                        <PosterImage 
+                          src={getRandomPosterUrl()} 
+                          alt={similarMovie.title || 'Movie'}
+                        />
                       )}
                     </SimilarMoviePoster>
                     <SimilarMovieTitle>{similarMovie.title || 'Untitled'}</SimilarMovieTitle>
@@ -405,7 +426,7 @@ const RecommendationBadge = styled.div<RecommendationBadgeProps>`
   border-radius: 4px;
   font-size: 0.8rem;
   font-weight: bold;
-  background-color: ${props => props.$isCollaborative ? 'rgba(229, 9, 20, 0.8)' : 'rgba(33, 150, 83, 0.8)'};
+  background-color: ${props => props.$isCollaborative ? 'rgba(59, 130, 246, 0.8)' : 'rgba(33, 150, 83, 0.8)'};
   color: white;
 `;
 

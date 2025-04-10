@@ -3,9 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import axios from 'axios';
 import bgImage from '../images/WelcomePageBanner.png';
-import logo from '../images/CineNicheLogo.png';
+import logo from '../images/nobackground.png';
 
-const API_BASE_URL = 'https://localhost:5002/api';
+// Use HTTPS in production, HTTP in development
+const isDevelopment = window.location.hostname === 'localhost';
+const API_BASE_URL = isDevelopment 
+  ? 'http://localhost:5000/api'
+  : 'https://localhost:5002/api';
 
 enum RegisterStep {
   INITIAL = 'initial',
