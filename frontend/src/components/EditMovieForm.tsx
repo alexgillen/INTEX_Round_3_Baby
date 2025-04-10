@@ -18,7 +18,7 @@ const EditMovieForm = ({ movie, onSuccess, onCancel }: EditMovieFormProps) => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await fetch("https://localhost:5002/api/Movie/GetGenres");
+        const response = await fetch("https://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net//api/Movie/GetGenres");
         const data = await response.json();
         setGenreOptions(data.filter((genre: string) => genre.trim() !== ""));
       } catch (err) {
