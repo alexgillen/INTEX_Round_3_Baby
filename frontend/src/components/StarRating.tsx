@@ -17,9 +17,11 @@ const StarRating: React.FC<Props> = ({ showId }) => {
       if (!token) return;
 
       try {
-        const response = await fetch(`http://localhost:5000/api/rating/user/${showId}`, {
+        const response = await fetch(`https://localhost:5002/api/rating/user/${showId}`, {
+          method: 'GET',
           headers: {
-            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
           },
         });
 
@@ -40,11 +42,11 @@ const StarRating: React.FC<Props> = ({ showId }) => {
     if (!token) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/rating/rate`, {
+      const response = await fetch(`https://localhost:5002/api/rating/rate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
         body: JSON.stringify({ showId, rating: newRating }),
       });

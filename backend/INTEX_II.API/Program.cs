@@ -145,10 +145,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
     {
-        builder.WithOrigins("http://localhost:3501")  // Frontend URL
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .WithExposedHeaders("Token-Expired"); // Only expose headers you need
+        builder.WithOrigins(
+                "http://localhost:3501",  // HTTP Frontend URL
+                "https://localhost:3501"   // HTTPS Frontend URL
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithExposedHeaders("Token-Expired"); // Only expose headers you need
     });
 });
 
@@ -164,12 +167,33 @@ if (app.Environment.IsDevelopment())
 // CORS must be called before auth middleware
 app.UseCors("AllowAll");
 
-// Comment out HTTPS redirection for development
-// app.UseHttpsRedirection();
+// Enable HTTPS redirection
+app.UseHttpsRedirection();
 
 // Add authentication middleware before authorization
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Add Content-Security-Policy middleware
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append(
+        "Content-Security-Policy",
+        "default-src 'self'; " +
+        "script-src 'self' https://www.google.com https://www.gstatic.com; " +
+        "style-src 'self' 'unsafe-inline'; " +
+        "img-src 'self' data: https:; " +
+        "connect-src 'self' https://localhost:5002 https://test.stytch.com; " +
+        "frame-src https://www.google.com; " +
+        "font-src 'self'; " +
+        "object-src 'none'; " +
+        "base-uri 'self'; " +
+        "form-action 'self'; " +
+        "frame-ancestors 'none'; " +
+        "upgrade-insecure-requests;"
+    );
+    await next();
+});
 
 app.MapControllers();
 

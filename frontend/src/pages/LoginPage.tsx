@@ -5,7 +5,7 @@ import axios from 'axios';
 import bgImage from '../images/WelcomePageBanner.png';
 import logo from '../images/CineNicheLogo.png';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://localhost:5002/api';
 
 const isValidPassword = (password: string): boolean => {
   return password.length >= 10;

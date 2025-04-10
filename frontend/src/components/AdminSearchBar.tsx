@@ -19,7 +19,8 @@ const AdminSearchBar: React.FC<Props> = ({ onSearch }) => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/Movie/GetGenres");
+        const response = await fetch("https://localhost:5002/api/Movie/GetGenres");
+        if (!response.ok) throw new Error('Failed to fetch genres');
         const data = await response.json();
         setAvailableGenres(data.filter((genre: string) => genre.trim() !== ""));
       } catch (error) {
