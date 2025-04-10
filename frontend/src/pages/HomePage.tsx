@@ -1,12 +1,15 @@
 // File: /frontend/src/pages/HomePage.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
-import logo from '../images/CineNicheLogo.png';
+import logo from '../images/nobackground.png';
 import { logout } from '../components/AuthAPI';
 import { fetchAllRecommendations, MovieRecommendation } from '../api/RecommendationAPI';
+import { fetchMovies } from '../api/MovieAPI';
+import { Movie } from '../types/Movie';
 import RecommendationCategory from '../components/RecommendationCategory';
 import { useNavigate, Navigate, Link } from 'react-router-dom';
 import SearchOverlay from '../components/SearchOverly';
+import MovieDetailsModal from '../components/MovieDetailsModal';
 
 interface UserData {
   userId: string;
@@ -20,6 +23,23 @@ interface UserData {
   profileCompleted?: boolean;
 }
 
+// Array of default poster options
+const DEFAULT_POSTER_OPTIONS = [
+  'https://image.tmdb.org/t/p/original/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg', // The Matrix
+  'https://image.tmdb.org/t/p/original/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg', // Star Wars
+  'https://image.tmdb.org/t/p/original/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg', // Titanic
+  'https://image.tmdb.org/t/p/original/5KCVkau1HEl7ZzfPsKAPM0sMiKc.jpg', // Inception
+  'https://image.tmdb.org/t/p/original/rPpxrz8o0svAPCLucjsEdMXoDfX.jpg', // Forrest Gump
+  'https://image.tmdb.org/t/p/original/vL5LR6WdxWPjLPFRLe133jXWsh5.jpg', // The Dark Knight
+  'https://image.tmdb.org/t/p/original/3bhkrj58Vtu7enYsRolD1fZdja1.jpg'  // The Godfather
+];
+
+// Function to get a random poster URL
+const getRandomPosterUrl = () => {
+  const randomIndex = Math.floor(Math.random() * DEFAULT_POSTER_OPTIONS.length);
+  return DEFAULT_POSTER_OPTIONS[randomIndex];
+};
+
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -30,6 +50,29 @@ const HomePage: React.FC = () => {
   const [showSearchOverlay, setShowSearchOverlay] = useState(false);
   const [collaborativeRecs, setCollaborativeRecs] = useState<MovieRecommendation[]>([]);
   const [contentBasedRecs, setContentBasedRecs] = useState<Record<string, MovieRecommendation[]>>({});
+  
+  // New states for infinite scrolling and general movies
+  const [generalMovies, setGeneralMovies] = useState<Movie[]>([]);
+  const [page, setPage] = useState<number>(1);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
+  const [totalMovies, setTotalMovies] = useState<number>(0);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastMovieElementRef = useCallback((node: HTMLDivElement | null) => {
+    if (loadingMore) return;
+    
+    if (observer.current) observer.current.disconnect();
+    
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prevPage => prevPage + 1);
+      }
+    });
+    
+    if (node) observer.current.observe(node);
+  }, [loadingMore, hasMore]);
 
   const token = localStorage.getItem('authToken');
   const userDataStr = localStorage.getItem('userData');
@@ -78,6 +121,33 @@ const HomePage: React.FC = () => {
     loadRecommendations();
   }, []);
 
+  // New effect for infinite scroll
+  useEffect(() => {
+    const loadMoreMovies = async () => {
+      if (page === 1 && generalMovies.length > 0) return;
+      
+      try {
+        setLoadingMore(true);
+        const response = await fetchMovies(24, page, [], '');
+        
+        if (page === 1) {
+          setGeneralMovies(response.movies);
+        } else {
+          setGeneralMovies(prev => [...prev, ...response.movies]);
+        }
+        
+        setTotalMovies(response.totalNumMovies);
+        setHasMore(generalMovies.length + response.movies.length < response.totalNumMovies);
+      } catch (err) {
+        console.error('Error loading more movies:', err);
+      } finally {
+        setLoadingMore(false);
+      }
+    };
+    
+    loadMoreMovies();
+  }, [page]);
+
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
@@ -89,6 +159,10 @@ const HomePage: React.FC = () => {
     } finally {
       setIsLoggingOut(false);
     }
+  };
+  
+  const handleMovieClick = (movie: Movie) => {
+    setSelectedMovie(movie);
   };
 
   if (loading) return <LoadingScreen>Loading...</LoadingScreen>;
@@ -105,6 +179,9 @@ const HomePage: React.FC = () => {
           <LogoImg src={logo} alt="CineNiche Logo" onClick={() => navigate('/home')} />
           <HeaderRight>
             <SearchButton onClick={() => setShowSearchOverlay(true)}>Search</SearchButton>
+            {userData && userData.role === "Admin" && (
+              <AdminButton onClick={() => navigate('/adminMoviesPage')}>Edit Movies</AdminButton>
+            )}
             {userData && <WelcomeText>Welcome, {userData.firstName}!</WelcomeText>}
             <LogoutButton onClick={handleLogout} disabled={isLoggingOut}>
               {isLoggingOut ? 'Logging Out...' : 'Logout'}
@@ -127,7 +204,7 @@ const HomePage: React.FC = () => {
           ) : (
             <>
               <RecommendationWrapper>
-                <SectionTitle>Collaborative Filtering Recommendations</SectionTitle>
+                <SectionTitle>Movies Just for You</SectionTitle>
                 {collaborativeRecs.length > 0 ? (
                   <RecommendationBox>
                     <RecommendationDescription>
@@ -153,7 +230,7 @@ const HomePage: React.FC = () => {
               </RecommendationWrapper>
 
               <RecommendationWrapper>
-                <SectionTitle>Content-Based Recommendations</SectionTitle>
+                <SectionTitle>Genre Favorites</SectionTitle>
                 {Object.keys(contentBasedRecs).length > 0 ? (
                   <RecommendationBox>
                     <RecommendationDescription>
@@ -175,13 +252,68 @@ const HomePage: React.FC = () => {
                   </RecommendationBox>
                 )}
               </RecommendationWrapper>
+
+              <PrivacyLinkContainer>
+                <PrivacyLink onClick={() => navigate('/privacy')}>
+                  Privacy Policy
+                </PrivacyLink>
+              </PrivacyLinkContainer>
+              
+              {/* Infinite scroll movies section */}
+              <RecommendationWrapper>
+                <SectionTitle>Explore More Movies</SectionTitle>
+                <ExploreDescription>
+                  Scroll down to discover more movies from our catalog
+                </ExploreDescription>
+                
+                {generalMovies.length > 0 ? (
+                  <MoviesGrid>
+                    {generalMovies.map((movie, index) => {
+                      if (generalMovies.length === index + 1) {
+                        // Last element - attach ref for infinite scrolling
+                        return (
+                          <MovieCard 
+                            ref={lastMovieElementRef} 
+                            key={movie.show_id} 
+                            onClick={() => handleMovieClick(movie)}
+                          >
+                            <MoviePoster src={movie.posterUrl || getRandomPosterUrl()} />
+                            <MovieTitle>{movie.title}</MovieTitle>
+                            <MovieMeta>{movie.release_year} • {movie.rating}</MovieMeta>
+                          </MovieCard>
+                        );
+                      } else {
+                        // Regular movie card
+                        return (
+                          <MovieCard 
+                            key={movie.show_id} 
+                            onClick={() => handleMovieClick(movie)}
+                          >
+                            <MoviePoster src={movie.posterUrl || getRandomPosterUrl()} />
+                            <MovieTitle>{movie.title}</MovieTitle>
+                            <MovieMeta>{movie.release_year} • {movie.rating}</MovieMeta>
+                          </MovieCard>
+                        );
+                      }
+                    })}
+                  </MoviesGrid>
+                ) : (
+                  <RecommendationBox>
+                    <div style={{ textAlign: 'center' }}>
+                      <EmptyStateText>No movies found.</EmptyStateText>
+                    </div>
+                  </RecommendationBox>
+                )}
+                
+                {loadingMore && <LoadingMore>Loading more movies...</LoadingMore>}
+              </RecommendationWrapper>
             </>
           )}
 
-          {!loading && Object.keys(recommendations).length === 0 && (
+          {!loading && Object.keys(recommendations).length === 0 && !generalMovies.length && (
             <EmptyStateContainer>
               <EmptyStateText>
-                No recommendations of any kind found. The recommendation service might be unavailable.
+                No recommendations or movies found. Please try again later.
               </EmptyStateText>
               <PlayButton onClick={() => navigate('/profile')}>Update Profile</PlayButton>
             </EmptyStateContainer>
@@ -196,6 +328,45 @@ const HomePage: React.FC = () => {
       </PageWrapper>
 
       {showSearchOverlay && <SearchOverlay onClose={() => setShowSearchOverlay(false)} />}
+      
+      {selectedMovie && (
+        <MovieDetailsModal
+          movie={{
+            show_id: selectedMovie.show_id,
+            title: selectedMovie.title || '',
+            type: selectedMovie.type || '',
+            posterUrl: selectedMovie.posterUrl || getRandomPosterUrl(),
+            director: selectedMovie.director,
+            cast: selectedMovie.cast,
+            description: selectedMovie.description,
+            rating: selectedMovie.rating,
+            duration: selectedMovie.duration,
+            releaseYear: selectedMovie.release_year ?? 0,
+            country: selectedMovie.country,
+            genre: selectedMovie.genres || '',
+            recommendation_type: 'content',
+            demographic_segment: '',
+            gender: '',
+            age_group: '',
+            created_at: new Date().toISOString(),
+          }}
+          onClose={() => setSelectedMovie(null)}
+          onSelectMovie={(m) => handleMovieClick({
+            show_id: m.show_id,
+            title: m.title,
+            type: m.type,
+            posterUrl: m.posterUrl,
+            director: m.director,
+            cast: m.cast,
+            description: m.description,
+            rating: m.rating,
+            duration: m.duration,
+            release_year: m.releaseYear ?? 0,
+            country: m.country,
+            genres: m.genre,
+          })}
+        />
+      )}
     </>
   );
 };
@@ -251,14 +422,14 @@ const WelcomeText = styled.span`
 `;
 
 const LogoutButton = styled.button`
-  background: #e50914;
+  background: #3b82f6;
   border: none;
   color: white;
   padding: 8px 16px;
   border-radius: 4px;
   font-weight: 600;
   cursor: pointer;
-  &:hover { background: #b20710; }
+  &:hover { background: #2563eb; }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 `;
 
@@ -271,6 +442,29 @@ const SearchButton = styled.button`
   cursor: pointer;
   font-size: 0.9rem;
   &:hover { background: #333; }
+`;
+
+const AdminButton = styled.button`
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  &:hover { background: #2563eb; }
+`;
+
+const PrivacyLink = styled.span`
+  color: #90caf9;
+  font-size: 0.75rem;
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: center;
+  &:hover {
+    color: #bbdefb;
+  }
 `;
 
 const HeroSection = styled.section`
@@ -328,7 +522,7 @@ const SectionTitle = styled.h3`
   font-size: 1.8rem;
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 2px solid #e50914;
+  border-bottom: 2px solid #3b82f6;
 `;
 
 const Footer = styled.footer`
@@ -349,10 +543,10 @@ const LoadingScreen = styled.div`
 `;
 
 const LogoImg = styled.img`
-  height: 40px;
+  height: 60px;
   width: auto;
   cursor: pointer;
-  @media (max-width: 600px) { height: 30px; }
+  @media (max-width: 600px) { height: 45px; }
 `;
 
 const RecommendationWrapper = styled.div`
@@ -399,11 +593,12 @@ const EmptyStateListItem = styled.li`
 `;
 
 const ErrorMessage = styled.div`
-  background-color: rgba(229, 9, 20, 0.2);
-  color: #f88;
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #fff;
   padding: 15px;
   border-radius: 5px;
   margin-bottom: 20px;
+  border: 1px solid #3b82f6;
 `;
 const FooterLink = styled(Link)`
   margin-left: 16px;
@@ -413,4 +608,58 @@ const FooterLink = styled(Link)`
   &:hover {
     color: #fff;
   }
+`;
+
+// Add these new styled components for the infinite scroll section
+const MoviesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+`;
+
+const MovieCard = styled.div`
+  cursor: pointer;
+  transition: transform 0.2s;
+  &:hover {
+    transform: scale(1.05);
+  }
+`;
+
+const MoviePoster = styled.img`
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 6px;
+`;
+
+const MovieTitle = styled.div`
+  font-size: 0.9rem;
+  margin-top: 8px;
+  color: #fff;
+  font-weight: 500;
+`;
+
+const MovieMeta = styled.div`
+  font-size: 0.8rem;
+  color: #aaa;
+`;
+
+const LoadingMore = styled.div`
+  text-align: center;
+  padding: 20px;
+  color: #aaa;
+  font-size: 0.9rem;
+`;
+
+const ExploreDescription = styled.p`
+  color: #aaa;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  font-size: 1rem;
+`;
+
+const PrivacyLinkContainer = styled.div`
+  text-align: center;
+  margin-bottom: 30px;
 `;

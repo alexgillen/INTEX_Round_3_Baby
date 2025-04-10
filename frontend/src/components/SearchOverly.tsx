@@ -4,6 +4,23 @@ import { fetchMovies } from '../api/MovieAPI';
 import { Movie } from '../types/Movie';
 import MovieDetailsModal from './MovieDetailsModal';
 
+// Array of default poster options
+const DEFAULT_POSTER_OPTIONS = [
+  'https://image.tmdb.org/t/p/original/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg', // The Matrix
+  'https://image.tmdb.org/t/p/original/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg', // Star Wars
+  'https://image.tmdb.org/t/p/original/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg', // Titanic
+  'https://image.tmdb.org/t/p/original/5KCVkau1HEl7ZzfPsKAPM0sMiKc.jpg', // Inception
+  'https://image.tmdb.org/t/p/original/rPpxrz8o0svAPCLucjsEdMXoDfX.jpg', // Forrest Gump
+  'https://image.tmdb.org/t/p/original/vL5LR6WdxWPjLPFRLe133jXWsh5.jpg', // The Dark Knight
+  'https://image.tmdb.org/t/p/original/3bhkrj58Vtu7enYsRolD1fZdja1.jpg'  // The Godfather
+];
+
+// Function to get a random poster URL
+const getRandomPosterUrl = () => {
+  const randomIndex = Math.floor(Math.random() * DEFAULT_POSTER_OPTIONS.length);
+  return DEFAULT_POSTER_OPTIONS[randomIndex];
+};
+
 const POPULAR_GENRES = [
   'Action', 'Adventure', "Children", "Comedies", "Documentaries", "Dramas",
   "Fantasy", "Horror Movies", "Kids' TV", "Musicals", "Reality TV"
@@ -25,7 +42,11 @@ const SearchOverlay: React.FC<Props> = ({ onClose }) => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const res = await fetch('https://localhost:5002/api/Movie/GetGenres');
+        // Use HTTPS in production, HTTP in development
+        const isDevelopment = window.location.hostname === 'localhost';
+        const baseUrl = isDevelopment ? "http://localhost:5000" : "https://localhost:5002";
+        
+        const res = await fetch(`${baseUrl}/api/Movie/GetGenres`);
         if (!res.ok) {
           throw new Error('Failed to load genres');
         }
@@ -102,7 +123,7 @@ const SearchOverlay: React.FC<Props> = ({ onClose }) => {
           <ResultsGrid>
             {results.map((movie) => (
               <MovieCard key={movie.show_id} onClick={() => handleClickMovie(movie.show_id)}>
-                <MoviePoster src={movie.posterUrl || '/placeholder-poster.jpg'} />
+                <MoviePoster src={movie.posterUrl || getRandomPosterUrl()} />
                 <MovieTitle>{movie.title}</MovieTitle>
                 <MovieMeta>{movie.release_year} • {movie.rating}</MovieMeta>
               </MovieCard>
@@ -121,7 +142,7 @@ const SearchOverlay: React.FC<Props> = ({ onClose }) => {
             show_id: selectedMovie.show_id,
             title: selectedMovie.title || '',
             type: selectedMovie.type || '',
-            posterUrl: selectedMovie.posterUrl,
+            posterUrl: selectedMovie.posterUrl || getRandomPosterUrl(),
             director: selectedMovie.director,
             cast: selectedMovie.cast,
             description: selectedMovie.description,
@@ -192,10 +213,14 @@ const SearchInput = styled.input`
 `;
 
 const SearchBtn = styled.button`
-  background: #e50914; color: white;
-  border: none; padding: 10px;
-  border-radius: 4px; font-weight: bold; cursor: pointer;
-  &:hover { background: #b20710; }
+  background: #3b82f6; 
+  color: white;
+  border: none; 
+  padding: 10px;
+  border-radius: 4px; 
+  font-weight: bold; 
+  cursor: pointer;
+  &:hover { background: #2563eb; }
 `;
 
 const FilterLabel = styled.div`
@@ -207,14 +232,14 @@ const GenresWrapper = styled.div`
 `;
 
 const GenreButton = styled.button<{ $active: boolean }>`
-  background: ${({ $active }) => ($active ? '#e50914' : '#333')};
-  color: white;
+  background: ${({ $active }) => ($active ? '#3b82f6' : '#333')};
+  color: ${({ $active }) => ($active ? 'white' : 'white')};
   border: 1px solid #444;
   padding: 6px 12px;
   border-radius: 4px;
   font-size: 0.85rem;
   cursor: pointer;
-  &:hover { background: #b20710; }
+  &:hover { background: #2563eb; color: white; }
   &:focus { outline: none; }
 `;
 

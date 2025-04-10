@@ -14,6 +14,7 @@ const PrivacyPage: React.FC = () => {
           <LogoImg src={logo} alt="CineNiche Logo" onClick={() => navigate('/home')} />
           <HeaderRight>
             <NavButton onClick={() => navigate('/home')}>Home</NavButton>
+            <SmallButton onClick={() => window.open('https://github.com/cineniche', '_blank')}>GitHub</SmallButton>
           </HeaderRight>
         </Header>
 
@@ -67,7 +68,7 @@ const PrivacyPage: React.FC = () => {
             <SectionHeading>4. Your Rights</SectionHeading>
             <Paragraph>
               You can access or update your personal information at any time through your profile settings. If you'd like to delete your
-              account, contact us and we’ll handle it promptly.
+              account, contact us and we'll handle it promptly.
             </Paragraph>
           </Section>
 
@@ -139,6 +140,17 @@ const NavButton = styled.button`
   cursor: pointer;
   font-size: 0.9rem;
   &:hover { background: #333; }
+`;
+
+const SmallButton = styled.button`
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  &:hover { background: #2563eb; }
 `;
 
 const LogoImg = styled.img`
