@@ -8,8 +8,8 @@ import logo from '../images/nobackground.png';
 // Use HTTPS in production, HTTP in development
 const isDevelopment = window.location.hostname === 'localhost';
 const API_BASE_URL = isDevelopment 
-  ? 'http://localhost:5000/api'
-  : 'https://localhost:5002/api';
+  ? 'http://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net//api'
+  : 'https://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net//api';
 
 const isValidPassword = (password: string): boolean => {
   return password.length >= 10;
