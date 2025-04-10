@@ -1,15 +1,12 @@
 import { Movie } from "../types/Movie";
 
-interface FetchMoviesResponse {
+export interface FetchMoviesResponse {
     movies: Movie[];
     totalNumMovies: number;
 }
 
-// Use HTTPS in production, HTTP in development
-const isDevelopment = window.location.hostname === 'localhost';
-const API_URL = isDevelopment 
-  ? "http://localhost:5000/api/Movie"
-  : "https://localhost:5002/api/Movie"
+// Use the environment variable for the API URL
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/Movie`;
 
 export const fetchMovies = async (
     pageSize: Number,
@@ -126,12 +123,12 @@ export const getMovieById = async (show_id: string): Promise<Movie> => {
     return await response.json();
 };
 
-export const getSimilarMovies = async (showId: string, limit: number = 10): Promise<Movie[]> => {
+export const getSimilarMovies = async (movieId: string): Promise<Movie[]> => {
     try {
-        const response = await fetch(`${API_URL}/GetSimilarMovies/${showId}?limit=${limit}`);
+        const response = await fetch(`${API_URL}/GetSimilarMovies/${movieId}`);
         
         if (!response.ok) {
-            throw new Error("Failed to fetch similar movies");
+            throw new Error('Failed to fetch similar movies');
         }
         
         return await response.json();

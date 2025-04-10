@@ -5,11 +5,8 @@ import axios from 'axios';
 import bgImage from '../images/WelcomePageBanner.png';
 import logo from '../images/nobackground.png';
 
-// Use HTTPS in production, HTTP in development
-const isDevelopment = window.location.hostname === 'localhost';
-const API_BASE_URL = isDevelopment 
-  ? 'http://localhost:5000/api'
-  : 'https://localhost:5002/api';
+// Use environment variable for API URL
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
 
 const isValidPassword = (password: string): boolean => {
   return password.length >= 10;
