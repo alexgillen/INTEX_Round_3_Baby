@@ -8,8 +8,8 @@ interface FetchMoviesResponse {
 // Use HTTPS in production, HTTP in development
 const isDevelopment = window.location.hostname === 'localhost';
 const API_URL = isDevelopment 
-  ? "http://localhost:5000/api/Movie"
-  : "https://localhost:5002/api/Movie"
+  ? "http://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net//api/Movie"
+  : "https://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net//api/Movie"
 
 export const fetchMovies = async (
     pageSize: Number,

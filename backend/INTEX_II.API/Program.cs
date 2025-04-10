@@ -146,8 +146,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", builder =>
     {
         builder.WithOrigins(
-                "http://localhost:3501",  // HTTP Frontend URL
-                "https://localhost:3501"   // HTTPS Frontend URL
+                "http://happy-beach-07834ec1e.6.azurestaticapps.net/",  // HTTP Frontend URL
+                "https://happy-beach-07834ec1e.6.azurestaticapps.net/"   // HTTPS Frontend URL
             )
             .AllowAnyMethod()
             .AllowAnyHeader()
@@ -186,7 +186,7 @@ app.Use(async (context, next) =>
         "script-src 'self' https://www.google.com https://www.gstatic.com; " +
         "style-src 'self' 'unsafe-inline'; " +
         "img-src 'self' data: https:; " +
-        "connect-src 'self' https://localhost:5002 https://test.stytch.com; " +
+        "connect-src 'self' https://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net/ https://test.stytch.com; " +
         "frame-src https://www.google.com; " +
         "font-src 'self'; " +
         "object-src 'none'; " +

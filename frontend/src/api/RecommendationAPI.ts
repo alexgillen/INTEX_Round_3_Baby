@@ -34,8 +34,8 @@ export interface MovieRecommendation {
   // Use HTTPS in production, HTTP in development
   const isDevelopment = window.location.hostname === 'localhost';
   const API_URL = isDevelopment 
-    ? "http://localhost:5000/api/Recommendation"
-    : "https://localhost:5002/api/Recommendation";
+    ? "http://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net//api/Recommendation"
+    : "https://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net//api/Recommendation";
   
   // Helper to get the auth token from localStorage
   const getAuthToken = (): string | null => {
