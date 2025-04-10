@@ -189,12 +189,6 @@ const PosterImage = styled.img`
   object-fit: cover;
 `;
 
-const MoviePosterTitle = styled.span`
-  text-align: center;
-  padding: 0 10px;
-  font-size: 0.9rem;
-`;
-
 const MovieInfo = styled.div`
   padding: 12px;
 `;

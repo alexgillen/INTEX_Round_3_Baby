@@ -340,24 +340,6 @@ const MoviePoster = styled.img`
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 `;
 
-const MoviePosterPlaceholder = styled.div`
-  width: 100%;
-  aspect-ratio: 2/3;
-  background-color: #333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #666;
-  border-radius: 6px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-`;
-
-const MoviePosterTitle = styled.span`
-  text-align: center;
-  padding: 0 10px;
-  font-size: 1rem;
-`;
-
 const InfoSection = styled.div`
   flex: 1;
   padding-left: 0;

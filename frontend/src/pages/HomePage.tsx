@@ -56,7 +56,7 @@ const HomePage: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
-  const [totalMovies, setTotalMovies] = useState<number>(0);
+  const [, setTotalMovies] = useState<number>(0);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   
   const observer = useRef<IntersectionObserver | null>(null);
