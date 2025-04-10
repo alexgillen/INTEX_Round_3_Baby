@@ -1,6 +1,10 @@
 // AuthAPI.ts - Functions for authentication
 
-const API_URL = "https://localhost:5002/api/auth"; // Path to auth controller
+// Use HTTPS in production, HTTP in development
+const isDevelopment = window.location.hostname === 'localhost';
+const API_URL = isDevelopment 
+  ? "http://localhost:5000/api/auth"
+  : "https://localhost:5002/api/auth"; // Path to auth controller
 
 interface LogoutRequest {
   sessionId: string;
@@ -17,33 +21,35 @@ const getSessionId = (): string | null => {
 
 export const logout = async (): Promise<LogoutResponse> => {
   try {
-    const sessionId = getSessionId();
-    
-    if (!sessionId) {
-      throw new Error('No active session found');
-    }
-
-    const response = await fetch(`${API_URL}/logout`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-      },
-      body: JSON.stringify({ sessionId } as LogoutRequest)
-    });
-
-    if (!response.ok) {
-      throw new Error(`Logout failed: ${response.status} ${response.statusText}`);
-    }
-
-    // Clear auth data from localStorage
+    // Clear auth data from localStorage immediately
     localStorage.removeItem('authToken');
     localStorage.removeItem('sessionId');
+    localStorage.removeItem('userData');
     localStorage.removeItem('user');
+    localStorage.removeItem('userMovieRatings');
     
-    return await response.json();
+    // If we have a sessionId, try to revoke it on the server, but don't make it required
+    const sessionId = getSessionId();
+    
+    if (sessionId) {
+      try {
+        await fetch(`${API_URL}/logout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ sessionId } as LogoutRequest)
+        });
+      } catch (e) {
+        // Ignore server errors during logout - we've already cleared local storage
+        console.log("Could not revoke session on server, but local logout succeeded");
+      }
+    }
+    
+    return { success: true };
   } catch (error) {
     console.error("Error during logout:", error);
-    throw error;
+    // Still return success since we've cleared localStorage
+    return { success: true };
   }
 };

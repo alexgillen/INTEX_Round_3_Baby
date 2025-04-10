@@ -5,60 +5,52 @@ type Props = {
   showId: string;
 };
 
+// Helper function to manage ratings in localStorage
+const userRatingsManager = {
+  key: 'userMovieRatings',
+  
+  // Get all stored ratings
+  getAllRatings: (): Record<string, number> => {
+    const stored = localStorage.getItem('userMovieRatings');
+    return stored ? JSON.parse(stored) : {};
+  },
+  
+  // Get rating for a specific movie
+  getRating: (movieId: string): number => {
+    const ratings = userRatingsManager.getAllRatings();
+    return ratings[movieId] || 0;
+  },
+  
+  // Save rating for a movie
+  saveRating: (movieId: string, rating: number): void => {
+    const ratings = userRatingsManager.getAllRatings();
+    ratings[movieId] = rating;
+    localStorage.setItem('userMovieRatings', JSON.stringify(ratings));
+  }
+};
+
 const StarRating: React.FC<Props> = ({ showId }) => {
   const [rating, setRating] = useState<number>(0);
   const [hover, setHover] = useState<number>(0);
 
-  const token = localStorage.getItem('authToken');
-
-  // Fetch user's rating for this movie
+  // Fetch user's rating for this movie from localStorage
   useEffect(() => {
-    const fetchUserRating = async () => {
-      if (!token) return;
-
-      try {
-        const response = await fetch(`https://localhost:5002/api/rating/user/${showId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setRating(data.rating);
-        }
-      } catch (err) {
-        console.error('Error fetching user rating:', err);
-      }
-    };
-
-    fetchUserRating();
-  }, [showId, token]);
-
-  // Send rating to backend
-  const submitRating = async (newRating: number) => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`https://localhost:5002/api/rating/rate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ showId, rating: newRating }),
-      });
-
-      if (response.ok) {
-        setRating(newRating);
-      } else {
-        console.error('Failed to submit rating');
-      }
-    } catch (err) {
-      console.error('Rating error:', err);
+    // Only load ratings if user is logged in
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      const savedRating = userRatingsManager.getRating(showId);
+      setRating(savedRating);
     }
+  }, [showId]);
+
+  // Save rating to localStorage
+  const submitRating = (newRating: number) => {
+    // Only save ratings if user is logged in
+    const token = localStorage.getItem('authToken');
+    if (!token) return;
+    
+    userRatingsManager.saveRating(showId, newRating);
+    setRating(newRating);
   };
 
   return (
@@ -74,7 +66,7 @@ const StarRating: React.FC<Props> = ({ showId }) => {
           ★
         </Star>
       ))}
-      <RatingLabel>{rating ? `You rated this ${rating}/5` : 'Rate this movie'}</RatingLabel>
+      <RatingLabel>{!rating && 'Rate this movie'}</RatingLabel>
     </Container>
   );
 };
