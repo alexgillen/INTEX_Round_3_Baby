@@ -167,8 +167,11 @@ if (app.Environment.IsDevelopment())
 // CORS must be called before auth middleware
 app.UseCors("AllowAll");
 
-// Enable HTTPS redirection
-app.UseHttpsRedirection();
+// Only force HTTPS in production
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 // Add authentication middleware before authorization
 app.UseAuthentication();
