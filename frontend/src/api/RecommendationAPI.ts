@@ -31,7 +31,7 @@ export interface MovieRecommendation {
     recommendations: Record<string, MovieRecommendation[]>;
   }
   
-  const API_URL = "http://localhost:5000/api/Recommendation";
+  const API_URL = "https://localhost:5002/api/Recommendation";
   
   // Helper to get the auth token from localStorage
   const getAuthToken = (): string | null => {

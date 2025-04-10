@@ -1,6 +1,6 @@
 // AuthAPI.ts - Functions for authentication
 
-const API_URL = "http://localhost:5000/api/auth"; // Path to auth controller
+const API_URL = "https://localhost:5002/api/auth"; // Path to auth controller
 
 interface LogoutRequest {
   sessionId: string;

@@ -25,7 +25,10 @@ const SearchOverlay: React.FC<Props> = ({ onClose }) => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/Movie/GetGenres');
+        const res = await fetch('https://localhost:5002/api/Movie/GetGenres');
+        if (!res.ok) {
+          throw new Error('Failed to load genres');
+        }
         const data = await res.json();
         const filtered = data.filter((g: string) => POPULAR_GENRES.includes(g));
         setGenres(filtered);
