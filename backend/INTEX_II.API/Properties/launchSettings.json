@@ -14,7 +14,7 @@
             "dotnetRunMessages": true,
             "launchBrowser": true,
             "launchUrl": "swagger",
-            "applicationUrl": "https://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net/;http://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net/",
+            "applicationUrl": "https://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net/;http://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }

@@ -44,7 +44,7 @@ const SearchOverlay: React.FC<Props> = ({ onClose }) => {
       try {
         // Use HTTPS in production, HTTP in development
         const isDevelopment = window.location.hostname === 'localhost';
-        const baseUrl = isDevelopment ? "http://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net/" : "https://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net/";
+        const baseUrl = isDevelopment ? "http://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net" : "https://intex-group3-13-backend-deploy-anb0acagfxbqcthh.eastus-01.azurewebsites.net";
         
         const res = await fetch(`${baseUrl}/api/Movie/GetGenres`);
         if (!res.ok) {
