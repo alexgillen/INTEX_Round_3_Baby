@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage';
 import AdminMoviesPage from './pages/AdminMoviesPage';
 import MovieDetailPage from './pages/MovieDetailPage';
 import PrivacyPage from './pages/PrivacyPage';
+import CookieConsent from './components/CookieConsent';
 
 // Debug component to show when no routes match
 const NotFoundDebug = () => {
@@ -106,6 +107,9 @@ function App() {
           {/* Catch-all route for debugging */}
           <Route path="*" element={<NotFoundDebug />} />
         </Routes>
+        
+        {/* Cookie Consent Banner - shown on all pages */}
+        <CookieConsent />
       </Router>
     </CartProvider>
   );
