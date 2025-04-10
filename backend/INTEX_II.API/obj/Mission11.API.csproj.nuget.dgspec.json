@@ -1,31 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\Repo10\\intex2\\backend\\INTEX_II.API\\Mission11.API.csproj": {}
+    "/Users/hunterbird/Desktop/numberthree/INTEX_Round_3_Baby/backend/INTEX_II.API/Mission11.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\Repo10\\intex2\\backend\\INTEX_II.API\\Mission11.API.csproj": {
+    "/Users/hunterbird/Desktop/numberthree/INTEX_Round_3_Baby/backend/INTEX_II.API/Mission11.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\Repo10\\intex2\\backend\\INTEX_II.API\\Mission11.API.csproj",
+        "projectUniqueName": "/Users/hunterbird/Desktop/numberthree/INTEX_Round_3_Baby/backend/INTEX_II.API/Mission11.API.csproj",
         "projectName": "Mission11.API",
-        "projectPath": "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\Repo10\\intex2\\backend\\INTEX_II.API\\Mission11.API.csproj",
-        "packagesPath": "C:\\Users\\gille\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\Repo10\\intex2\\backend\\INTEX_II.API\\obj\\",
+        "projectPath": "/Users/hunterbird/Desktop/numberthree/INTEX_Round_3_Baby/backend/INTEX_II.API/Mission11.API.csproj",
+        "packagesPath": "/Users/hunterbird/.nuget/packages/",
+        "outputPath": "/Users/hunterbird/Desktop/numberthree/INTEX_Round_3_Baby/backend/INTEX_II.API/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\gille\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/hunterbird/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -43,8 +37,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -114,7 +107,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.406/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
